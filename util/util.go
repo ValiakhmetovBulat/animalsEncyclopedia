@@ -1,16 +1,21 @@
 package util
 
 import (
+	"animalsEncyclopedia/auth"
 	log "animalsEncyclopedia/logger"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"math/big"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -81,5 +86,66 @@ func CheckAndCreateSSL(cp string, kp string) error {
 	keyOut.Close()
 
 	log.Info("TLS Certificate Generation complete")
+	return nil
+}
+
+func SaveBase64Image(base64Image string, saveDir string) (string, error) {
+	if base64Image == "" {
+		return "", nil
+	}
+
+	split := strings.Split(base64Image, ",")
+
+	if len(split) != 2 {
+		return "", errors.New("invalid base64 image")
+	}
+
+	meta := split[0]
+	data := split[1]
+
+	var ext string
+
+	switch {
+	case strings.Contains(meta, "image/png"):
+		ext = ".png"
+	case strings.Contains(meta, "image/jpeg"):
+		ext = ".jpg"
+	case strings.Contains(meta, "image/webp"):
+		ext = ".webp"
+	case strings.Contains(meta, "image/jpg"):
+		ext = ".jpg"
+	default:
+		return "", errors.New("unsupported image format")
+	}
+
+	imageBytes, err := base64.StdEncoding.DecodeString(data)
+
+	if err != nil {
+		return "", err
+	}
+
+	safeFileName := auth.GenerateSecureKey(8)
+	fileName := safeFileName + ext
+
+	fullPath := filepath.Join(saveDir, fileName)
+
+	err = os.WriteFile(fullPath, imageBytes, 0644)
+
+	if err != nil {
+		return "", err
+	}
+
+	return fileName, nil
+}
+
+func DeleteImage(dir, filename string) error {
+	filePath := filepath.Join(dir, filename)
+
+	err := os.Remove(filePath)
+
+	if err != nil {
+		log.Errorf("error deleting file %s: %s", filePath, err)
+	}
+
 	return nil
 }

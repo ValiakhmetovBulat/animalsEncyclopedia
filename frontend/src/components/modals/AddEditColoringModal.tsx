@@ -3,51 +3,42 @@ import CustomAlert from "../main/CustomAlert.tsx";
 import {CloseButton, Form, Image, Modal} from "react-bootstrap";
 import {RESULT_STATUS, type ResultState} from "../../api/result.ts";
 import {type ChangeEvent, type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState} from "react";
-import {addAnimal, type Animal, type AnimalRequest, updateAnimal} from "../../api/animal.ts";
+import {addColoring, type Coloring, type ColoringRequest, updateColoring} from "../../api/coloring.ts";
 import type {FormControlElement} from "../main/types/input.ts";
 import CustomSelect, {type DefaultOption} from "../main/CustomSelect.tsx";
 import type {SingleValue} from "react-select";
-import {type CountryOption, getCountriesOptions} from "../../api/country.ts";
-import {getTypesOptions, type TypeOption} from "../../api/type.ts";
-import {type BreedOption, getBreedOptionsWithTypeId} from "../../api/breed.ts";
+import {type BreedOption, getBreedOptions} from "../../api/breed.ts";
 import {GetImageUrl} from "../utils/imageHelper.ts";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 
-type AddEditAnimalModalProps = {
-    animal: Animal | null;
+type AddEditColoringModalProps = {
+    coloring: Coloring | null;
     onHide: () => void;
     show: boolean;
     setRefreshKey: Dispatch<SetStateAction<number>>;
 }
 
-const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimalModalProps) => {
-    const [result, setResult] = useState<ResultState<Animal>>({ status: RESULT_STATUS.IDLE })
+const AddEditColoringModal = ({coloring, onHide, show, setRefreshKey}: AddEditColoringModalProps) => {
+    const [result, setResult] = useState<ResultState<Coloring>>({ status: RESULT_STATUS.IDLE })
     const [showAlert, setShowAlert] = useState(false);
     const [nameError, setNameError] = useState<string>("");
-    const [countryError, setCountryError] = useState<string>("");
-    const [typeError, setTypeError] = useState<string>("");
     const [breedError, setBreedError] = useState<string>("");
-    const [countriesOptions, setCountriesOptions] = useState<CountryOption[]>([]);
-    const [typesOptions, setTypesOptions] = useState<TypeOption[]>([]);
     const [breedsOptions, setBreedsOptions] = useState<BreedOption[]>([]);
     const [imagePreview, setImagePreview] = useState<string>("");
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    const [animalToInsert, setAnimalToInsert] = useState<Animal>({
+    const [coloringToInsert, setColoringToInsert] = useState<Coloring>({
         id: 0,
         name: "",
         breed_id: 0,
-        country_id: 0,
-        type_id: 0,
-        image_link: "",
-        description: ""
+        image_link: ""
     });
 
     const handleInputName = (e: ChangeEvent<FormControlElement>) => {
         const input = e.target.value
 
-        setAnimalToInsert((prev) => ({ ...prev, name: input}))
+        setColoringToInsert((prev) => ({ ...prev, name: input}))
 
         if (input.trim() === "") {
             setNameError("Поле «Наименование» обязательно")
@@ -55,36 +46,6 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
         }
 
         setNameError("")
-    }
-
-    const handleSelectCountry = (selected: SingleValue<DefaultOption>) => {
-        if (!selected) {
-            setShowAlert(true);
-            setCountryError("Необходимо выбрать страну")
-            return
-        }
-
-        setCountryError("")
-
-        setAnimalToInsert((prev) => ({
-            ...prev,
-            country_id: selected.value
-        }))
-    }
-
-    const handleSelectType = (selected: SingleValue<DefaultOption>) => {
-        if (!selected) {
-            setShowAlert(true);
-            setTypeError("Необходимо выбрать тип")
-            return
-        }
-
-        setTypeError("")
-
-        setAnimalToInsert((prev) => ({
-            ...prev,
-            type_id: selected.value
-        }))
     }
 
     const handleSelectBreed = (selected: SingleValue<DefaultOption>) => {
@@ -96,7 +57,7 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
 
         setBreedError("")
 
-        setAnimalToInsert((prev) => ({
+        setColoringToInsert((prev) => ({
             ...prev,
             breed_id: selected.value
         }))
@@ -104,26 +65,7 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
 
     useEffect(() => {
         if (show) {
-            getCountriesOptions().then((resp) => {
-                if (resp.ok) {
-                    if (resp?.data?.data) {
-                        setCountriesOptions(resp.data.data);
-                    }
-                }
-            })
-            getTypesOptions().then((resp) => {
-                if (resp.ok) {
-                    if (resp?.data?.data) {
-                        setTypesOptions(resp.data.data);
-                    }
-                }
-            })
-        }
-    }, [show]);
-
-    useEffect(() => {
-        if (show) {
-            getBreedOptionsWithTypeId(animalToInsert.type_id).then((resp) => {
+            getBreedOptions().then((resp) => {
                 if (resp.ok) {
                     if (resp?.data?.data) {
                         setBreedsOptions(resp.data.data);
@@ -131,29 +73,7 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                 }
             })
         }
-    }, [animalToInsert.type_id, show]);
-
-    const countryOptions = useMemo(() => {
-        return countriesOptions?.map(co => ({
-            value: co.id,
-            label: co.name
-        })) ?? [];
-    }, [countriesOptions]);
-
-    const selectedCountry = useMemo(() => {
-        return countryOptions.find((o) => o.value === animalToInsert.country_id) ?? null;
-    }, [countryOptions, animalToInsert.country_id]);
-
-    const typeOptions = useMemo(() => {
-        return typesOptions?.map(to => ({
-            value: to.id,
-            label: to.name
-        })) ?? [];
-    }, [typesOptions]);
-
-    const selectedType = useMemo(() => {
-        return typeOptions.find((o) => o.value === animalToInsert.type_id) ?? null;
-    }, [typeOptions, animalToInsert.type_id]);
+    }, [show]);
 
     const breedOptions = useMemo(() => {
         return breedsOptions?.map(bo => ({
@@ -163,53 +83,44 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
     }, [breedsOptions]);
 
     const selectedBreed = useMemo(() => {
-        return breedOptions.find((o) => o.value === animalToInsert.breed_id) ?? null;
-    }, [breedOptions, animalToInsert.breed_id]);
+        return breedOptions.find((o) => o.value === coloringToInsert.breed_id) ?? null;
+    }, [breedOptions, coloringToInsert.breed_id]);
 
     useEffect(() => {
-        if (animal) {
-            setAnimalToInsert({
-                id: animal.id,
-                name: animal.name,
-                breed_id: animal.breed_id,
-                country_id: animal.country_id,
-                type_id: animal.type_id,
-                image_link: animal.image_link,
-                description: animal.description
+        if (coloring) {
+            setColoringToInsert({
+                id: coloring.id,
+                name: coloring.name,
+                breed_id: coloring.breed_id,
+                image_link: coloring.image_link,
             })
         } else {
-            setAnimalToInsert({
+            setColoringToInsert({
                 id: 0,
                 name: "",
                 breed_id: 0,
-                country_id: 0,
-                type_id: 0,
                 image_link: "",
-                description: ""
             })
         }
 
         setImagePreview("");
-    }, [show, animal]);
+    }, [show, coloring]);
 
     const handleClose = () => {
         onHide()
     }
 
     const handleSave = () => {
-        const animalRequest: AnimalRequest = {
-            id: animalToInsert.id,
-            breed_id: animalToInsert.breed_id,
-            country_id: animalToInsert.country_id,
-            image_link: animalToInsert.image_link,
-            description: animalToInsert.description,
-            name: animalToInsert.name,
-            type_id: animalToInsert.type_id,
+        const coloringRequest: ColoringRequest = {
+            id: coloringToInsert.id,
+            breed_id: coloringToInsert.breed_id,
+            image_link: coloringToInsert.image_link,
+            name: coloringToInsert.name,
             new_image: imagePreview,
         }
 
-        if (animalToInsert.id === 0) {
-            addAnimal(animalRequest).then((resp) => {
+        if (coloringToInsert.id === 0) {
+            addColoring(coloringRequest).then((resp) => {
                 setShowAlert(true);
                 if (!resp.ok) {
                     let msg
@@ -218,15 +129,15 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                         case "invalid JSON structure":
                             msg = "Неверная структура запроса"
                             break
-                        case "related animal not found":
-                            msg = "Неверный ID связанного животного"
+                        case "related coloring not found":
+                            msg = "Неверный ID связанной породы"
                             break
                         default:
                             msg = "Неизвестная ошибка"
                     }
                     setResult({
                         status: RESULT_STATUS.ERROR,
-                        message: `Не удалось добавить животное: ${msg}`
+                        message: `Не удалось добавить окрас: ${msg}`
                     })
 
                     return
@@ -235,13 +146,13 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                 setRefreshKey(prev => prev + 1)
                 setResult({
                     status: RESULT_STATUS.SUCCESS,
-                    message: "Животное было успешно добавлено",
+                    message: "Окрас был успешно добавлен",
                     data: null,
                 })
                 handleClose();
             })
         } else {
-            updateAnimal(animalRequest).then((resp) => {
+            updateColoring(coloringRequest).then((resp) => {
                 setShowAlert(true);
                 if (!resp.ok) {
                     let msg
@@ -251,17 +162,17 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                             msg = "Неверная структура запроса"
                             break
                         case "not found":
-                            msg = "Обновляемый факт не найден"
+                            msg = "Обновляемый окрас не найден"
                             break
-                        case "related animal not found":
-                            msg = "Неверный ID связанного животного"
+                        case "related coloring not found":
+                            msg = "Неверный ID связанной породы"
                             break
                         default:
                             msg = "Неизвестная ошибка"
                     }
                     setResult({
                         status: RESULT_STATUS.ERROR,
-                        message: `Не удалось редактировать животное: ${msg}`
+                        message: `Не удалось редактировать окрас: ${msg}`
                     })
 
                     return
@@ -323,7 +234,7 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                 <Modal.Header>
                     <h3>
                         {
-                            animalToInsert.id === 0 ? `Создание животного` : `Редактирование животного ${animalToInsert.id}`
+                            coloringToInsert.id === 0 ? `Создание окраса` : `Редактирование окраса ${coloringToInsert.id}`
                         }
                     </h3>
 
@@ -351,34 +262,10 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                             type="text"
                             name="name"
                             autoComplete="name"
-                            value={animalToInsert.name}
+                            value={coloringToInsert.name}
                             onChange={(e) => handleInputName(e)}
                             onBlur={e=> handleInputName(e)}
                             placeholder="Наименование"
-                        />
-                    </Form.Group>
-
-                    <Form.Group className={"field gap-0 mt-2"}>
-                        <Form.Label className={"d-flex align-items-center gap-2"}>
-                            Тип
-                            {
-                                typeError && (
-                                    <span className="small text-danger fw-normal">
-                                                    {
-                                                        typeError
-                                                    }
-                                                </span>
-                                )
-                            }
-                        </Form.Label>
-
-                        <CustomSelect
-                            placeholder={"Выберите тип"}
-                            isClearable={false}
-                            isMulti={false}
-                            onChange={(e) =>  handleSelectType(e)}
-                            value={selectedType}
-                            options={typeOptions}
                         />
                     </Form.Group>
 
@@ -406,64 +293,27 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                         />
                     </Form.Group>
 
-                    <Form.Group className={"field gap-0 mt-2"}>
-                        <Form.Label className={"d-flex align-items-center gap-2"}>
-                            Страна
-                            {
-                                countryError && (
-                                    <span className="small text-danger fw-normal">
-                                                    {
-                                                        countryError
-                                                    }
-                                                </span>
-                                )
-                            }
-                        </Form.Label>
-
-                        <CustomSelect
-                            placeholder={"Выберите страну"}
-                            isClearable={false}
-                            isMulti={false}
-                            onChange={(e) =>  handleSelectCountry(e)}
-                            value={selectedCountry}
-                            options={countryOptions}
-                        />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label className="field d-flex align-items-center gap-2 mt-3">
-                            Описание
-                        </Form.Label>
-
-                        <textarea
-                            style={{width: "100%"}}
-                            name="description"
-                            autoComplete="description"
-                            value={animalToInsert.description}
-                            onChange={(e) => setAnimalToInsert((prev) => ({ ...prev, description: e.target.value}))}
-                            placeholder="Описание животного"
-                        />
-                    </Form.Group>
                     <Form.Group>
                         <Form.Label className="field d-flex align-items-center gap-2 mt-3">
                             Изображение
                         </Form.Label>
 
                         {
-                            imagePreview || animalToInsert.image_link ? (
+                            imagePreview || coloringToInsert.image_link ? (
                                 <>
                                     <Image
                                         src={
                                             imagePreview
                                                 ? imagePreview
-                                                : GetImageUrl(animalToInsert.image_link)
+                                                : GetImageUrl(coloringToInsert.image_link)
                                         }
-                                        alt={"animal-image"}
+                                        alt={"coloring-image"}
                                     />
 
                                     <CloseButton
                                         onClick={() => {
                                             setImagePreview("");
-                                            setAnimalToInsert(prev => ({
+                                            setColoringToInsert(prev => ({
                                                 ...prev,
                                                 image_link: ""
                                             }));
@@ -512,4 +362,4 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
     );
 };
 
-export default AddEditAnimalModal;
+export default AddEditColoringModal;

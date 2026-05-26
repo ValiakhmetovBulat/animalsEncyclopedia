@@ -58,14 +58,16 @@ const AddEditFactModal = ({fact, onHide, show, setRefreshKey}: AddEditFactModalP
     }
 
     useEffect(() => {
-        getAnimalsOptions().then((resp) => {
-            if (resp.ok) {
-                if (resp?.data?.data) {
-                    setAnimalsOptions(resp.data.data);
+        if (show) {
+            getAnimalsOptions().then((resp) => {
+                if (resp.ok) {
+                    if (resp?.data?.data) {
+                        setAnimalsOptions(resp.data.data);
+                    }
                 }
-            }
-        })
-    }, []);
+            })
+        }
+    }, [show]);
 
     const animalOptions = useMemo(() => {
         return animalsOptions?.map(ao => ({
@@ -76,7 +78,7 @@ const AddEditFactModal = ({fact, onHide, show, setRefreshKey}: AddEditFactModalP
 
     const selectedAnimal = useMemo(() => {
         return animalOptions.find((o) => o.value === factToInsert.animal_id) ?? null;
-    }, [animalsOptions, factToInsert.animal_id]);
+    }, [animalOptions, factToInsert.animal_id]);
 
     useEffect(() => {
         if (fact) {
@@ -152,7 +154,7 @@ const AddEditFactModal = ({fact, onHide, show, setRefreshKey}: AddEditFactModalP
                     }
                     setResult({
                         status: RESULT_STATUS.ERROR,
-                        message: `Не удалось добавить факт: ${msg}`
+                        message: `Не удалось редактировать факт: ${msg}`
                     })
 
                     return
