@@ -1,0 +1,20 @@
+.action-button-group {
+
+  button {
+    border-radius: 0;
+
+    &:not(:last-of-type) {
+      border-right: 1px solid var(--border-primary) !important;
+    }
+  }
+
+  button:first-of-type {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+  }
+
+  button:last-of-type {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+  }
+}

@@ -1,0 +1,10 @@
+.custom-alert {
+  position: fixed !important;
+  top: auto;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(720px, calc(100% - 32px));
+  z-index: 1100;
+  font-size: 14px;
+}

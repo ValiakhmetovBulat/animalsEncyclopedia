@@ -1,0 +1,25 @@
+{
+  "server_name": "AnimalsEncyclopedia",
+  "version": "1.0",
+  "server_config": {
+    "listen_url": "127.0.0.1:8080",
+    "use_tls": true,
+    "cert_path": "phishnet_admin.crt",
+    "key_path": "phishnet_admin.key",
+    "trusted_origins": ["127.0.0.1:5173", "https://127.0.0.1:5173", "https://localhost:5173"],
+    "asset_storage_path": "static/assets"
+  },
+  "db_config": {
+    "host": "localhost",
+    "db_name": "animals_encyclopedia",
+    "db_user": "postgres",
+    "db_password": "postgres",
+    "port": 5432,
+    "ssl_mode": "disable",
+    "timezone": "UTC"
+  },
+  "logger_config": {
+    "filename": "logs.txt",
+    "level": ""
+  }
+}

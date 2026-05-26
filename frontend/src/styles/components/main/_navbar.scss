@@ -1,0 +1,22 @@
+.navbar {
+  margin-top: 0;
+  border-bottom: 2px solid var(--border);
+
+  .navbar-brand {
+    transition: color 0.3s;
+
+    &:hover {
+      cursor: pointer;
+      color: var(--primary) !important;
+    }
+  }
+
+  .logout-button {
+    transition: color 0.3s;
+
+    &:hover {
+      cursor: pointer;
+      color: var(--primary) !important;
+    }
+  }
+}

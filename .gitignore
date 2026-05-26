@@ -1,0 +1,16 @@
+.idea
+
+logs.txt
+pass.txt
+pswd.txt
+
+*.crt
+*.key
+*.pem
+
+static/assets/*
+
+frontend/node_modules
+frontend/dist
+frontend/ssl/*
+frontend/.idea
