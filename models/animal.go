@@ -92,6 +92,47 @@ func PostAnimal(a *Animal) error {
 		return err
 	}
 
+	err = db.Create(a).Error
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func DeleteAnimal(id int64) error {
+	err := db.Where("id = ?", id).Delete(&Animal{}).Error
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func GetAnimalById(id int64) (*Animal, error) {
+	var animal Animal
+
+	err := db.Where("id = ?", id).First(&animal).Error
+
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	return &animal, nil
+}
+
+func UpdateAnimal(a *Animal) error {
+	err := a.Validate()
+
+	if err != nil {
+		return err
+	}
+
 	err = db.Save(a).Error
 
 	if err != nil {

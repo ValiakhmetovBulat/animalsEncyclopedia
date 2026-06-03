@@ -58,14 +58,16 @@ const AddEditBreedModal = ({breed, onHide, show, setRefreshKey}: AddEditBreedMod
     }
 
     useEffect(() => {
-        getTypesOptions().then((resp) => {
-            if (resp.ok) {
-                if (resp?.data?.data) {
-                    setTypesOptions(resp.data.data);
+        if (show) {
+            getTypesOptions().then((resp) => {
+                if (resp.ok) {
+                    if (resp?.data?.data) {
+                        setTypesOptions(resp.data.data);
+                    }
                 }
-            }
-        })
-    }, []);
+            })
+        }
+    }, [show]);
 
     const typeOptions = useMemo(() => {
         return typesOptions?.map(to => ({
@@ -76,7 +78,7 @@ const AddEditBreedModal = ({breed, onHide, show, setRefreshKey}: AddEditBreedMod
 
     const selectedType = useMemo(() => {
         return typeOptions.find((t) => t.value === breedToInsert.type_id) ?? null;
-    }, [typesOptions, breedToInsert.type_id]);
+    }, [breedToInsert.type_id, typeOptions]);
 
     useEffect(() => {
         if (breed) {
@@ -152,7 +154,7 @@ const AddEditBreedModal = ({breed, onHide, show, setRefreshKey}: AddEditBreedMod
                     }
                     setResult({
                         status: RESULT_STATUS.ERROR,
-                        message: `Не удалось добавить породу: ${msg}`
+                        message: `Не удалось редактировать породу: ${msg}`
                     })
 
                     return
@@ -219,7 +221,7 @@ const AddEditBreedModal = ({breed, onHide, show, setRefreshKey}: AddEditBreedMod
                             value={breedToInsert.name}
                             onChange={(e) => handleInputName(e)}
                             onBlur={e=> handleInputName(e)}
-                            placeholder="Эта порода обладает..."
+                            placeholder="Бенгальская"
                         />
                     </Form.Group>
 

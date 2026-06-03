@@ -17,6 +17,17 @@ export type Animal = {
     image_link: string;
 }
 
+export type AnimalRequest = {
+    id: number;
+    name: string;
+    description: string;
+    type_id: number;
+    country_id: number;
+    breed_id: number;
+    image_link: string;
+    new_image: string;
+}
+
 export type AnimalOption = {
     id: number;
     name: string;
@@ -40,12 +51,12 @@ export const getAnimalsOptions = async() => {
     return await sendRequest<AnimalOption[], null>(`/animals/options`, RequestMethods.GET)
 }
 
-export const addAnimal = async(a: Animal) => {
-    return await sendRequest<null, Animal>(`/admin/animals`, RequestMethods.POST, a)
+export const addAnimal = async(a: AnimalRequest) => {
+    return await sendRequest<null, AnimalRequest>(`/admin/animals`, RequestMethods.POST, a)
 }
 
-export const updateAnimal = async(a: Animal) => {
-    return await sendRequest<null, Animal>(`/admin/animals`, RequestMethods.PUT, a)
+export const updateAnimal = async(a: AnimalRequest) => {
+    return await sendRequest<null, AnimalRequest>(`/admin/animals`, RequestMethods.PUT, a)
 }
 
 export const deleteAnimal = async(id: number) => {

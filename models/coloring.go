@@ -1,6 +1,14 @@
 package models
 
-import log "animalsEncyclopedia/logger"
+import (
+	log "animalsEncyclopedia/logger"
+	"errors"
+	"strings"
+)
+
+var (
+	ErrColoringNameIsEmpty = errors.New("coloring's breed name is empty")
+)
 
 type Coloring struct {
 	Id        int64  `json:"id" gorm:"primaryKey;autoIncrement"`
@@ -53,4 +61,72 @@ func GetColoringsByBreedId(breedId int64) ([]Coloring, error) {
 	}
 
 	return cs, nil
+}
+
+func GetColoringById(id int64) (*Coloring, error) {
+	var coloring Coloring
+
+	err := db.Where("id = ?", id).First(&coloring).Error
+
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	return &coloring, nil
+}
+
+func AddColoring(coloring *Coloring) error {
+	if strings.TrimSpace(coloring.Name) == "" {
+		return ErrColoringNameIsEmpty
+	}
+
+	err := db.Where("id = ?", coloring.BreedId).First(&Breed{}).Error
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	err = db.Create(coloring).Error
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func UpdateColoring(coloring *Coloring) error {
+	if strings.TrimSpace(coloring.Name) == "" {
+		return ErrTextIsEmpty
+	}
+
+	err := db.Where("id = ?", coloring.BreedId).First(&Breed{}).Error
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	err = db.Save(coloring).Error
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func DeleteColoring(id int64) error {
+	err := db.Where("id = ?", id).Delete(&Coloring{}).Error
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	return nil
 }

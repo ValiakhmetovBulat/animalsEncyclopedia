@@ -4,8 +4,8 @@
   "server_config": {
     "listen_url": "127.0.0.1:8080",
     "use_tls": true,
-    "cert_path": "phishnet_admin.crt",
-    "key_path": "phishnet_admin.key",
+    "cert_path": "cert.crt",
+    "key_path": "key.key",
     "trusted_origins": ["127.0.0.1:5173", "https://127.0.0.1:5173", "https://localhost:5173"],
     "asset_storage_path": "static/assets"
   },

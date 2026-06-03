@@ -102,7 +102,7 @@ const AddEditCountryModal = ({country, onHide, show, setRefreshKey}: AddEditCoun
                     }
                     setResult({
                         status: RESULT_STATUS.ERROR,
-                        message: `Не удалось добавить страну: ${msg}`
+                        message: `Не удалось редактировать страну: ${msg}`
                     })
 
                     return

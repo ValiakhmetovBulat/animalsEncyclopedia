@@ -178,6 +178,20 @@ func (as *Server) registerRoutes() {
 				adminBreeds.PUT("", as.UpdateBreed)
 				adminBreeds.DELETE("", as.DeleteBreed)
 			}
+
+			adminAnimals := admin.Group("/animals")
+			{
+				adminAnimals.POST("", as.PostAnimal)
+				adminAnimals.PUT("", as.UpdateAnimal)
+				adminAnimals.DELETE("", as.DeleteAnimal)
+			}
+
+			adminColorings := admin.Group("/colorings")
+			{
+				adminColorings.POST("", as.PostColoring)
+				adminColorings.PUT("", as.UpdateColoring)
+				adminColorings.DELETE("", as.DeleteColoring)
+			}
 		}
 	}
 }

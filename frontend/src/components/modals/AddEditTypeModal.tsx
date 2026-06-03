@@ -102,7 +102,7 @@ const AddEditTypeModal = ({givenType, onHide, show, setRefreshKey}: AddEditTypeM
                     }
                     setResult({
                         status: RESULT_STATUS.ERROR,
-                        message: `Не удалось добавить тип: ${msg}`
+                        message: `Не удалось редактировать тип: ${msg}`
                     })
 
                     return

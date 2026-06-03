@@ -10,6 +10,7 @@ import LoadingSpinner from "../main/LoadingSpinner.tsx";
 import {RESULT_STATUS, type ResultState} from "../../api/result.ts";
 import type {Breed} from "../../api/breed.ts";
 import AnimalDetailsModal from "../modals/AnimalDetailsModal.tsx";
+import CustomAlert from "../main/CustomAlert.tsx";
 
 const MainPage = () => {
     const [animals, setAnimals] = useState<Animal[] | null>();
@@ -25,6 +26,7 @@ const MainPage = () => {
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [result, setResult] = useState<ResultState<null>>({ status: RESULT_STATUS.IDLE })
     const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
+    const [showAlert, setShowAlert] = useState(false);
     const [detailedAnimal, setDetailedAnimal] = useState<Animal>({
         breed: undefined,
         breed_id: 0,
@@ -60,6 +62,7 @@ const MainPage = () => {
                         status: RESULT_STATUS.ERROR,
                         message: "Не удалось получить список пород"
                     })
+                    setShowAlert(true)
                     return
                 }
             })
@@ -84,6 +87,7 @@ const MainPage = () => {
                         status: RESULT_STATUS.ERROR,
                         message: "Не удалось получить список стран"
                     })
+                    setShowAlert(true)
                     return
                 }
             })
@@ -98,6 +102,7 @@ const MainPage = () => {
                         status: RESULT_STATUS.ERROR,
                         message: "Не удалось получить список типов животных"
                     })
+                    setShowAlert(true)
                     return
                 }
             })
@@ -121,6 +126,7 @@ const MainPage = () => {
                     status: RESULT_STATUS.ERROR,
                     message: "Не удалось получить список животных"
                 })
+                setShowAlert(true)
                 return;
             }
 
@@ -179,6 +185,12 @@ const MainPage = () => {
 
     return (
         <>
+            <CustomAlert
+                show={showAlert}
+                setShow={setShowAlert}
+                result={result}
+            />
+
             <AnimalDetailsModal
                 onHide={() => setShowDetailsModal(false)}
                 show={showDetailsModal}
