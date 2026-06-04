@@ -12,14 +12,14 @@ type Country struct {
 	Name string `json:"name" gorm:"size:128;not null"`
 }
 
-var (
-	ErrCountryNameIsEmpty = errors.New("country's name is empty")
-)
-
 type CountryOption struct {
 	Id   int64  `json:"id" gorm:"id"`
 	Name string `json:"name" gorm:"name"`
 }
+
+var (
+	ErrCountryNameIsEmpty = errors.New("country's name is empty")
+)
 
 func GetCountryById(id int64) (*Country, error) {
 	var country Country

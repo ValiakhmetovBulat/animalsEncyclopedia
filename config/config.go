@@ -15,6 +15,7 @@ type Config struct {
 }
 
 type ServerConfig struct {
+	FrontendDistPath string   `json:"frontend_dist_path"`
 	ListenUrl        string   `json:"listen_url"`
 	UseTLS           bool     `json:"use_tls"`
 	CertPath         string   `json:"cert_path"`

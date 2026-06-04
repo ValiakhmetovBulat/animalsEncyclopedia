@@ -4,6 +4,8 @@ import type {ReactNode} from "react";
 import type {AppResponse, PaginatedResponse} from "../../api/client.ts";
 import {Pagination, Table} from "react-bootstrap";
 import LoadingSpinner from "../main/LoadingSpinner.tsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPlus, faRotate} from "@fortawesome/free-solid-svg-icons";
 
 export type CustomTableColumn<T> = {
     key: string;
@@ -17,15 +19,16 @@ type CustomTableProps<T> = {
     getRowKey: (item: T, index: number) => string | number;
     limit?: number;
     refreshKey?: number;
+    onAdd?: () => void;
 };
 
-const CustomTable = <T,>({dataRequest, columns, getRowKey, refreshKey, limit = 5}: CustomTableProps<T>) => {
+const CustomTable = <T,>({dataRequest, columns, getRowKey, refreshKey, limit = 5, onAdd}: CustomTableProps<T>) => {
     const [data, setData] = useState<T[] | null>();
     const [currentPage, setCurrentPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const getData = () => {
         setLoading(true);
 
         dataRequest(currentPage, limit).then((resp) => {
@@ -38,6 +41,10 @@ const CustomTable = <T,>({dataRequest, columns, getRowKey, refreshKey, limit = 5
         }).finally(() => {
             setLoading(false);
         });
+    }
+
+    useEffect(() => {
+        getData()
     }, [currentPage, dataRequest, limit, refreshKey]);
 
     const isPaginationItem = (index: number, totalPages: number) => {
@@ -77,6 +84,16 @@ const CustomTable = <T,>({dataRequest, columns, getRowKey, refreshKey, limit = 5
 
     return (
         <div className={"mt-1 custom-table"}>
+            <div className={"d-flex justify-content-between"}>
+                <button className={"button-custom d-flex align-items-center"} onClick={onAdd}>
+                    Добавить <FontAwesomeIcon icon={faPlus}/>
+                </button>
+
+                <button className={"button-custom-edit d-flex align-items-center"} onClick={getData}>
+                    <FontAwesomeIcon icon={faRotate}/>
+                </button>
+            </div>
+
             <Table responsive striped className={"custom-table-grid"}>
                 <thead>
                 <tr>

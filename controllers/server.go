@@ -9,6 +9,10 @@ import (
 	"context"
 	"crypto/tls"
 	"net/http"
+	"os"
+	"path"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -91,6 +95,11 @@ func (as *Server) registerRoutes() {
 	as.engine.OPTIONS("/*path", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
+
+	frontendDistPath := as.config.FrontendDistPath
+	if strings.TrimSpace(frontendDistPath) == "" {
+		frontendDistPath = filepath.FromSlash("frontend/dist")
+	}
 
 	as.engine.Static("/static", "./static/assets")
 
@@ -194,6 +203,52 @@ func (as *Server) registerRoutes() {
 			}
 		}
 	}
+
+	as.engine.NoRoute(func(c *gin.Context) {
+		reqPath := c.Request.URL.Path
+		if strings.HasPrefix(reqPath, "/api") {
+			c.Status(http.StatusNotFound)
+			return
+		}
+
+		// Work in slash-paths first, then convert to OS path.
+		rel := strings.TrimPrefix(reqPath, "/")
+		cleanRel := strings.TrimPrefix(path.Clean("/"+rel), "/")
+		// Prevent traversal like ../
+		if cleanRel == "." || strings.HasPrefix(cleanRel, "..") {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+
+		candidate := filepath.Join(frontendDistPath, filepath.FromSlash(cleanRel))
+		distAbs, distAbsErr := filepath.Abs(frontendDistPath)
+		candAbs, candAbsErr := filepath.Abs(candidate)
+		if distAbsErr == nil && candAbsErr == nil {
+			distPrefix := distAbs + string(os.PathSeparator)
+			if candAbs != distAbs && !strings.HasPrefix(candAbs, distPrefix) {
+				c.Status(http.StatusBadRequest)
+				return
+			}
+		}
+
+		// If it's an existing file (not a dir), serve it.
+		if st, err := os.Stat(candidate); err == nil && !st.IsDir() {
+			c.File(candidate)
+			return
+		}
+
+		// Otherwise serve the SPA entrypoint.
+		indexPath := filepath.Join(frontendDistPath, "index.html")
+		if _, err := os.Stat(indexPath); err == nil {
+			// index.html should not be aggressively cached; it carries hashed asset references.
+			c.Header("Cache-Control", "no-cache")
+			c.File(indexPath)
+			return
+		}
+
+		// Frontend build isn't present; keep behavior explicit.
+		c.Status(http.StatusNotFound)
+	})
 }
 
 func (as *Server) Shutdown() error {

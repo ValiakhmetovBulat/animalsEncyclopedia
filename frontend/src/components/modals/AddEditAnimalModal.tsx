@@ -251,10 +251,10 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                             msg = "Неверная структура запроса"
                             break
                         case "not found":
-                            msg = "Обновляемый факт не найден"
+                            msg = "Обновляемое животное не найдено"
                             break
-                        case "related animal not found":
-                            msg = "Неверный ID связанного животного"
+                        case "name length must be between 0 and 256":
+                            msg = "Поле «Наименование» не может быть пустым"
                             break
                         default:
                             msg = "Неизвестная ошибка"
@@ -450,8 +450,9 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
 
                         {
                             imagePreview || animalToInsert.image_link ? (
-                                <>
+                                <div>
                                     <Image
+                                        style={{maxWidth: "100%"}}
                                         src={
                                             imagePreview
                                                 ? imagePreview
@@ -469,7 +470,7 @@ const AddEditAnimalModal = ({animal, onHide, show, setRefreshKey}: AddEditAnimal
                                             }));
                                         }}
                                     />
-                                </>
+                                </div>
                             ) : (
                                 <>
                                     <input

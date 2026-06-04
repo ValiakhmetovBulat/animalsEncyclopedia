@@ -13,10 +13,6 @@ type Fact struct {
 	Animal   Animal `json:"-" gorm:"foreignkey:AnimalId"`
 }
 
-var (
-	ErrTextIsEmpty = errors.New("fact's text is empty")
-)
-
 func GetFactsByAnimalId(animalId int64) ([]Fact, error) {
 	var facts []Fact
 
@@ -29,6 +25,10 @@ func GetFactsByAnimalId(animalId int64) ([]Fact, error) {
 
 	return facts, nil
 }
+
+var (
+	ErrTextIsEmpty = errors.New("fact's text is empty")
+)
 
 func GetFactsPaginated(page, limit int) ([]Fact, int64, error) {
 	var fs []Fact

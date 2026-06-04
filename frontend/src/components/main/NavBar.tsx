@@ -24,7 +24,7 @@ const NavBar = () => {
     return (
         <Navbar expand={"lg"}>
             <Container>
-                <Navbar.Brand onClick={() => navigate(MAIN_PAGE_ROUTE)} className={"d-flex ms-3 mt-3 gap-3"}>
+                <Navbar.Brand onClick={() => navigate(MAIN_PAGE_ROUTE)} className={"d-flex flex-wrap ms-0 mt-3 gap-3"}>
                     <FontAwesomeIcon icon={faCat} size="lg" />
                     <h3 className={"fw-bold"}>Энциклопедия домашних животных</h3>
                 </Navbar.Brand>

@@ -205,7 +205,7 @@ const MainPage = () => {
                 <div className={"d-flex gap-3 w-100 flex-wrap"}>
                     {
                         types ? (
-                            <div className={"flex-grow-0"}>
+                            <div className={"flex-grow-1"}>
                                 <FormLabel column={true} htmlFor={"animalType"}>
                                     Тип
                                 </FormLabel>
@@ -265,7 +265,7 @@ const MainPage = () => {
 
                     {
                         countries ? (
-                            <div className={"flex-grow-0"}>
+                            <div className={"flex-grow-1"}>
                                 <FormLabel column={true} htmlFor={"animalCountries"}>
                                     Страна
                                 </FormLabel>

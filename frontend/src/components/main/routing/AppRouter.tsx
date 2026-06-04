@@ -51,6 +51,10 @@ const AppRouter = () => {
                     element={<Navigate to={NOTFOUND_ROUTE} replace={true} />}
                 />
             </Routes>
+
+            <div className={"w-100 bg-dark mb-0 d-flex align-items-center justify-content-center"} style={{height: "100px"}}>
+                <p className={"text-white"}>Copyright © 2026 Валиахметов Б.М., гр. 4383</p>
+            </div>
         </div>
     );
 };
